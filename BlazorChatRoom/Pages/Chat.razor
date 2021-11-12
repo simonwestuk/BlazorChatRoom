@@ -1,0 +1,50 @@
+﻿@page "/Chat"
+
+@code {
+
+    List<string> ChatItems = new List<string>()
+{
+        "Hello",
+        "General Kenobi",
+        "I have been expecting you!",
+        "What's the time Mr Wolf?!",
+        "Goodbye"
+    };
+
+
+}
+
+<h3>Chat</h3>
+
+<div class="container-lg">
+    <div class="row bg-dark">
+        <div class="col-2 p-2">
+            <div class="text-center">
+                <img src="https://picsum.photos/id/237/75/75" class="rounded-circle border border-4 border-light" alt="Profile Picture" />
+            </div>
+        </div>
+        <div class="col p-4">
+            <span class="text text-lg text-light">User Name</span>
+            <br />
+            <span class="small text-light mt-3">19 new messages...</span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col h-25">
+            <div class="container-fluid">
+                @foreach (var item in ChatItems)
+            {
+                <div class="row">
+                    <div class="col m-4 p-4 bg-info rounded-pill">
+                        <span class="text-light">@item</span>
+                    </div>
+                </div>
+            }
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
