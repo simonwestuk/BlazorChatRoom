@@ -1,16 +1,21 @@
-﻿@page "/Chat"
+﻿@using BlazorChatRoom.Data
+@page "/Chat"
 
 @code {
 
-    List<string> ChatItems = new List<string>()
-{
-        "Hello",
-        "General Kenobi",
-        "I have been expecting you!",
-        "What's the time Mr Wolf?!",
-        "Goodbye"
-    };
+    string newMessage;
 
+
+    List<Message> ChatItems = new List<Message>()
+        {
+            new Message {MessageBody = "Hello there", TimeStamp = DateTime.Now},
+            new Message {MessageBody = "Good Afternoon", TimeStamp = DateTime.Now}
+        };
+
+    private void addMessage(string message)
+    {
+        ChatItems.Add(new Message { MessageBody = message });
+    }
 
 }
 
@@ -33,14 +38,24 @@
     <div class="row">
         <div class="col h-25">
             <div class="container-fluid">
-                @foreach (var item in ChatItems)
+                @foreach (Message item in ChatItems)
             {
                 <div class="row">
                     <div class="col m-4 p-4 bg-info rounded-pill">
-                        <span class="text-light">@item</span>
+                        <span class="text-light">@item.MessageBody</span>
+                        <br />
+                        <span class="text-light small">@item.TimeStamp.ToString("dd/MM/yyyy hh:mm:ss")</span>
                     </div>
                 </div>
             }
+            </div>
+        </div>
+    </div>
+    <div class="row p-2">
+        <div class="col">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="Enter your message here..." @bind="newMessage" aria-label="Enter your message here..." aria-describedby="button" />
+                <button class="btn btn-dark" type="button" id="txtMessage" @onclick="() => addMessage(newMessage)">Send</button>
             </div>
         </div>
     </div>
