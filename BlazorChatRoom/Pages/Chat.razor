@@ -1,9 +1,16 @@
 ﻿@using BlazorChatRoom.Data
+@using Microsoft.AspNetCore.SignalR.Client;
+@using System.Threading; 
+@using BlazorChatRoom.Hubs;
+@inject NavigationManager _nav; 
+  
 @page "/Chat"
 
 @code {
 
-    string newMessage;
+    private Guid username = Guid.NewGuid();
+    private string newMessage;
+    private HubConnection _hub;
 
 
     List<Message> ChatItems = new List<Message>()
@@ -15,6 +22,21 @@
     private void addMessage(string message)
     {
         ChatItems.Add(new Message { MessageBody = message });
+    }
+
+    public async Task startChatting()
+    {
+        try
+        {
+            _hub = new HubConnectionBuilder()
+            .WithUrl(_nav.BaseUri.TrimEnd('/') + ChatHub.HubPath)
+            .Build();
+            await _hub.StartAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
     }
 
 }
@@ -29,10 +51,14 @@
             </div>
         </div>
         <div class="col p-4">
-            <span class="text text-lg text-light">User Name</span>
+            <span class="text text-lg text-light">@username.ToString()</span>
             <br />
-            <span class="small text-light mt-3">19 new messages...</span>
+            <span class="small text-light mt-3">@ChatItems.Count new messages...</span>
         </div>
+    </div>
+
+    <div class="container">
+        <button class="btn btn-dark" type="button" id="startChatting" @onclick="() => startChatting()">Start Chatting...</button>
     </div>
 
     <div class="row">

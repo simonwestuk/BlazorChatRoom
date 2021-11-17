@@ -1,5 +1,6 @@
 using BlazorChatRoom.Areas.Identity;
 using BlazorChatRoom.Data;
+using BlazorChatRoom.Hubs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -70,6 +71,7 @@ namespace BlazorChatRoom
                 endpoints.MapControllers();
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
+                endpoints.MapHub<ChatHub>(ChatHub.HubPath); //ChatHub Endpoint...
             });
         }
     }
