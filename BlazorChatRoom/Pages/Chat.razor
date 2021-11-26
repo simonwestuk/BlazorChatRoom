@@ -24,6 +24,7 @@
         MessageModel newMessage = new MessageModel { MessageBody = message };
 
         newMessage.Sender = user.Username;
+        newMessage.TimeStamp = DateTime.Now;
 
         if (_hub != null || isActive == false)
         {
@@ -100,6 +101,7 @@
                     {
                         <div class="row">
                             <div class="col m-4 p-4 bg-info rounded-pill">
+                                <span class="text-dark">@item.Sender says: </span>
                                 <span class="text-light">@item.MessageBody</span>
                                 <br />
                                 <span class="text-light small">@item.TimeStamp.ToString("dd/MM/yyyy hh:mm:ss")</span>
