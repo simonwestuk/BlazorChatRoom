@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace BlazorChatRoom.Data
 {
-    public class Message
+    public class MessageModel
     {
         public Guid Id { get; set; }
 
