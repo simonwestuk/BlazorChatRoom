@@ -71,49 +71,44 @@
 @if (isActive)
 {
 
-    <div class="card border-primary my-3">
-        <div class="card-header">
-            <div class="row">
-                <div class="col-2">
-                    <div class="text-center">
-                        <img src="https://picsum.photos/id/237/75/75" class="rounded-circle border border-4 border-light" alt="Profile Picture" />
-                    </div>
-                </div>
-                <div class="col">
-                    <span class="text text-lg text-light">@user.Username @user.UserId.ToString()</span>
-                    <br />
-                </div>
-            </div>
+<div class="card border-primary my-3 mainChat">
+    <div class="card-header text-center">
 
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col h-25">
-                    <div class="container-fluid">
-                        @foreach (MessageModel item in Messages)
-                        {
-                            <div class="row">
-                                <div class="col m-4 p-4 bg-info rounded-pill">
-                                    <span class="text-dark">@item.Sender says: </span>
-                                    <span class="text-light">@item.MessageBody</span>
-                                    <br />
-                                    <span class="text-light small">@item.TimeStamp.ToString("dd/MM/yyyy hh:mm:ss")</span>
-                                </div>
+        <h3>Welcome to the Blazor Chat @user.Username!</h3>
+
+    </div>
+    <div class="card-body chatText">
+
+        <div class="row">
+            <div class="col h-25">
+                <div class="container-fluid">
+                    @foreach (MessageModel item in Messages)
+                    {
+                        <div class="row">
+                            <div class="col m-4 p-4 bg-info rounded-pill">
+                                <span class="text-dark">@item.Sender says: </span>
+                                <span class="text-light">@item.MessageBody</span>
+                                <br />
+                                <span class="text-light small">@item.TimeStamp.ToString("dd/MM/yyyy hh:mm:ss")</span>
                             </div>
-                        }
-                    </div>
+                        </div>
+                    }
                 </div>
             </div>
-            <div class="row p-2">
-                <div class="col">
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control" placeholder="Enter your message here..." @bind="newMessage" aria-label="Enter your message here..." aria-describedby="button" />
-                        <button class="btn btn-dark" type="button" id="txtMessage" @onclick="() => addMessage(newMessage)">Send</button>
-                    </div>
+        </div>
+
+    </div>
+    <div class="card-footer text-muted">
+        <div class="row">
+            <div class="col">
+                <div class="input-group my-2">
+                    <input type="text" class="form-control" placeholder="Enter your message here..." @bind="newMessage" aria-label="Enter your message here..." aria-describedby="button" />
+                    <button class="btn btn-primary" type="button" id="txtMessage" @onclick="() => addMessage(newMessage)">Send</button>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
 }
 
