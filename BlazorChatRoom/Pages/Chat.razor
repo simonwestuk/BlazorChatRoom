@@ -3,6 +3,9 @@
 @using System.Threading;
 @using BlazorChatRoom.Hubs;
 @using BlazorChatRoom.Models;
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor _context;
+
 @inject NavigationManager _nav;
 
 @page "/Chat"
@@ -12,10 +15,29 @@
     private string newMessage;
     private HubConnection _hub;
     private bool isActive = false;
-    private UserModel user = new UserModel()
+    private UserModel user = new UserModel();
+
+    protected async override void OnInitialized()
     {
-        UserId = Guid.NewGuid()
-    };
+        user.Username = _context.HttpContext.User.Identity.Name;
+        user.UserId = Guid.NewGuid();
+
+        try
+        {
+            _hub = new HubConnectionBuilder()
+            .WithUrl(_nav.BaseUri.TrimEnd('/') + ChatHub.HubPath)
+            .Build();
+            _hub.On<MessageModel>("RecieveMessage", RecieveMessage);
+            await _hub.StartAsync();
+            isActive = true;
+            StateHasChanged();
+
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
+    }
 
     List<MessageModel> Messages = new List<MessageModel>();
 
@@ -35,24 +57,6 @@
 
     }
 
-    public async Task startChatting()
-    {
-        try
-        {
-            _hub = new HubConnectionBuilder()
-            .WithUrl(_nav.BaseUri.TrimEnd('/') + ChatHub.HubPath)
-            .Build();
-            _hub.On<MessageModel>("RecieveMessage", RecieveMessage);
-            await _hub.StartAsync();
-            isActive = true;
-
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-        }
-    }
-
     private void RecieveMessage(MessageModel message)
     {
         if (isActive)
@@ -64,63 +68,53 @@
 
 }
 
-<h3>Chat</h3>
-
-<div class="container">
-    <div class="row">
-        <div class="col-8">
-            <input class="form-control" type="text" @bind="user.Username"/>
-        </div>
-        <div class="col-4">
-            <button class="btn btn-dark" type="button" id="startChatting" @onclick="() => startChatting()">Join Room</button>
-        </div>
-    </div>
-
-
-</div>
-
-
 @if (isActive)
 {
-    <div class="container-lg">
-        <div class="row bg-dark">
-            <div class="col-2 p-2">
-                <div class="text-center">
-                    <img src="https://picsum.photos/id/237/75/75" class="rounded-circle border border-4 border-light" alt="Profile Picture" />
-                </div>
-            </div>
-            <div class="col p-4">
-                <span class="text text-lg text-light">@user.Username @user.UserId.ToString()</span>
-                <br />
-            </div>
-        </div>
-        <div class="row">
-            <div class="col h-25">
-                <div class="container-fluid">
-                    @foreach (MessageModel item in Messages)
-                    {
-                        <div class="row">
-                            <div class="col m-4 p-4 bg-info rounded-pill">
-                                <span class="text-dark">@item.Sender says: </span>
-                                <span class="text-light">@item.MessageBody</span>
-                                <br />
-                                <span class="text-light small">@item.TimeStamp.ToString("dd/MM/yyyy hh:mm:ss")</span>
-                            </div>
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-        <div class="row p-2">
-            <div class="col">
-                <div class="input-group mb-3">
-                    <input type="text" class="form-control" placeholder="Enter your message here..." @bind="newMessage" aria-label="Enter your message here..." aria-describedby="button" />
-                    <button class="btn btn-dark" type="button" id="txtMessage" @onclick="() => addMessage(newMessage)">Send</button>
-                </div>
-            </div>
-        </div>
 
+    <div class="card border-primary my-3">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-2">
+                    <div class="text-center">
+                        <img src="https://picsum.photos/id/237/75/75" class="rounded-circle border border-4 border-light" alt="Profile Picture" />
+                    </div>
+                </div>
+                <div class="col">
+                    <span class="text text-lg text-light">@user.Username @user.UserId.ToString()</span>
+                    <br />
+                </div>
+            </div>
+
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col h-25">
+                    <div class="container-fluid">
+                        @foreach (MessageModel item in Messages)
+                        {
+                            <div class="row">
+                                <div class="col m-4 p-4 bg-info rounded-pill">
+                                    <span class="text-dark">@item.Sender says: </span>
+                                    <span class="text-light">@item.MessageBody</span>
+                                    <br />
+                                    <span class="text-light small">@item.TimeStamp.ToString("dd/MM/yyyy hh:mm:ss")</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="row p-2">
+                <div class="col">
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" placeholder="Enter your message here..." @bind="newMessage" aria-label="Enter your message here..." aria-describedby="button" />
+                        <button class="btn btn-dark" type="button" id="txtMessage" @onclick="() => addMessage(newMessage)">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
 }
 
 
