@@ -1,6 +1,7 @@
 using BlazorChatRoom.Areas.Identity;
 using BlazorChatRoom.Data;
 using BlazorChatRoom.Hubs;
+using BlazorChatRoom.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -42,6 +43,9 @@ namespace BlazorChatRoom
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddHttpContextAccessor();
+            services.AddSingleton<ChatRoomsModel>();
+            services.AddScoped<CurrentUser>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

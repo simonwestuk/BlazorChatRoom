@@ -1,0 +1,34 @@
+﻿@using BlazorChatRoom.Models
+@inject ChatRoomsModel rooms
+
+
+<div class="row mt-4">
+
+    @foreach (RoomModel room in rooms.ChatRooms)
+    {
+        <div class="col-3">
+
+            <div class="card border-primary mb-3">
+                <div class="card-header">@room.Name</div>
+                <div class="card-body">
+                    <h4 class="card-title text-md-center">There are <b>@room.OnlineUsers.Count</b> users online.</h4>
+                    <p>Created by: @room.CreatedBy.Username</p>
+                </div>
+                <button class="btn btn-primary m-2">Join Room</button>
+            </div>
+
+        </div>
+
+    }
+</div>
+
+
+
+@code {
+
+    protected override void OnInitialized()
+    {
+
+    }
+
+}
