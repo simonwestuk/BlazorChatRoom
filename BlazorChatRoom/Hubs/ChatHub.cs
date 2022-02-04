@@ -29,5 +29,16 @@ namespace BlazorChatRoom.Hubs
             await Clients.All.SendAsync("RecieveMessage", message);
         }
 
+        public async Task AddToGroup(string groupName)
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+            Console.WriteLine($"{Context.ConnectionId} added to group {groupName}!");
+        }
+
+
+        public async void UpdateGroup(string groupName)
+        {
+            await Clients.GroupExcept(groupName, Context.ConnectionId).SendAsync("UpdateGroup");
+        }
     }
 }

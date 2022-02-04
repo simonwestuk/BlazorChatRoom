@@ -33,20 +33,38 @@
             {
                 room = _rooms.ChatRooms[_room];
 
+                user.Username = _context.HttpContext.User.Identity.Name; 
+                user.UserId = Guid.NewGuid();
+
+                if (user.Username == null)
+                {
+                    _nav.NavigateTo("/");
+
+                }
+
             }
         }
+        else
+        {
+            _nav.NavigateTo("Main");
 
-        user.Username = _context.HttpContext.User.Identity.Name; //EDIT
-        user.UserId = Guid.NewGuid(); //EDIT
+        }
+
+
 
         try
         {
             _hub = new HubConnectionBuilder()
             .WithUrl(_nav.BaseUri.TrimEnd('/') + ChatHub.HubPath)
             .Build();
-            _hub.On<MessageModel>("RecieveMessage", RecieveMessage);
+            _hub.On("UpdateGroup", UpdateGroup);
             await _hub.StartAsync();
             isActive = true;
+
+            await _hub.InvokeAsync("AddToGroup", room.Id);
+
+
+
             StateHasChanged();
 
         }
@@ -54,9 +72,11 @@
         {
             Console.WriteLine(e.Message);
         }
+
+
+
     }
 
-    List<MessageModel> Messages = new List<MessageModel>();
 
     private async Task addMessage(string message)
     {
@@ -67,19 +87,21 @@
 
         if (_hub != null || isActive == false)
         {
-            await _hub.SendAsync("SendMessage", newMessage);
+            room.Messages.Add(newMessage);
+            await _hub.InvokeAsync("UpdateGroup", room.Id);
+            StateHasChanged();
         }
-        //Error
-
-
     }
 
-    private void RecieveMessage(MessageModel message)
+    private void UpdateGroup()
     {
-        if (isActive)
+        if (_rooms.ChatRooms.ContainsKey(room.Id))
         {
-            Messages.Add(message);
             StateHasChanged();
+        }
+        else
+        {
+             _nav.NavigateTo("/");
         }
     }
 
@@ -99,7 +121,7 @@
             <div class="row">
                 <div class="col h-25">
                     <div class="container-fluid">
-                        @foreach (MessageModel item in Messages)
+                        @foreach (MessageModel item in room.Messages)
                         {
                             <div class="row mb-2">
                                 <div class="col bg-info rounded-pill p-1 ps-2">

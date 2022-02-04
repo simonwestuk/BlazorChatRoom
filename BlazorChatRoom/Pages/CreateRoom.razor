@@ -1,5 +1,6 @@
 ﻿@using BlazorChatRoom.Models
 @inject CurrentUser current
+@inject NavigationManager nav
 @inject ChatRoomsModel rooms
 
 <div class="container">
@@ -21,6 +22,8 @@
         NewRoom.Name = name;
         rooms.ChatRooms.Add(NewRoom.Id, NewRoom);
         name = String.Empty;
+        nav.NavigateTo("/", forceLoad:true);
+
     }
 
 }
