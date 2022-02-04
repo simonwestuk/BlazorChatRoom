@@ -4,7 +4,7 @@
 
 <div class="row mt-4">
 
-    @foreach (RoomModel room in rooms.ChatRooms)
+    @foreach (RoomModel room in rooms.ChatRooms.Values)
     {
         <div class="col-3">
 
@@ -14,7 +14,7 @@
                     <h4 class="card-title text-md-center">There are <b>@room.OnlineUsers.Count</b> users online.</h4>
                     <p>Created by: @room.CreatedBy.Username</p>
                 </div>
-                <button class="btn btn-primary m-2">Join Room</button>
+                <a class="btn btn-primary m-2" href="/Chat?id=@room.Id">Join Room</a>
             </div>
 
         </div>

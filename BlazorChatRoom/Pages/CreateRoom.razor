@@ -19,7 +19,7 @@
         NewRoom.Id = Guid.NewGuid();
         NewRoom.CreatedBy = current.User;
         NewRoom.Name = name;
-        rooms.ChatRooms.Add(NewRoom);
+        rooms.ChatRooms.Add(NewRoom.Id, NewRoom);
         name = String.Empty;
     }
 

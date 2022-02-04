@@ -5,8 +5,9 @@
 @using BlazorChatRoom.Models;
 @using Microsoft.AspNetCore.Http
 @inject IHttpContextAccessor _context;
-
+@inject ChatRoomsModel _rooms
 @inject NavigationManager _nav;
+@using Microsoft.AspNetCore.WebUtilities;
 
 @page "/Chat"
 
@@ -16,11 +17,27 @@
     private HubConnection _hub;
     private bool isActive = false;
     private UserModel user = new UserModel();
+    private RoomModel room;
 
     protected async override void OnInitialized()
     {
-        user.Username = _context.HttpContext.User.Identity.Name;
-        user.UserId = Guid.NewGuid();
+
+        var uri = _nav.ToAbsoluteUri(_nav.Uri);
+
+
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("id", out var param))
+        {
+            Guid _room = new Guid(param.First());
+
+            if (_rooms.ChatRooms.ContainsKey(_room))
+            {
+                room = _rooms.ChatRooms[_room];
+
+            }
+        }
+
+        user.Username = _context.HttpContext.User.Identity.Name; //EDIT
+        user.UserId = Guid.NewGuid(); //EDIT
 
         try
         {
