@@ -1,6 +1,27 @@
-﻿<OpenRooms />
+﻿@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Identity
+@using BlazorChatRoom.Models
+@inject IHttpContextAccessor _context;
+@inject UserManager<IdentityUser> _userManager
+@inject CurrentUser _current
+
+<OpenRooms />
 <CreateRoom />
 
 @code {
+
+    protected async override void OnInitialized()
+    {
+
+        var user = await _userManager.FindByEmailAsync(_context.HttpContext.User.Identity.Name);
+
+        if (user != null)
+        {
+            _current.User.Online = true;
+            _current.User.UserId = user.Id;
+            _current.User.Username = user.Email;
+        }
+
+    }
 
 }

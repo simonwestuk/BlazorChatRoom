@@ -1,5 +1,9 @@
 ﻿@using BlazorChatRoom.Models
 @inject ChatRoomsModel rooms
+@using BlazorChatRoom.Hubs;
+@using Microsoft.AspNetCore.SignalR.Client;
+@inject NavigationManager _nav;
+@inject CurrentUser current
 
 
 <div class="row mt-4">
@@ -23,12 +27,64 @@
 </div>
 
 
+<div class="container">
+    <div class="input-group flex-nowrap">
+        <input type="text" class="form-control" placeholder="Enter a Room Name" @onkeypress="@KeySendHandler" aria-label="Room" aria-describedby="addon-wrapping" @bind-value="name" @bind-value:event="oninput">
+        <button class="btn btn-outline-secondary" type="button" id="btnCreateRoom" @onclick="Create">Create Room</button>
+    </div>
+</div>
+
 
 @code {
 
-    protected override void OnInitialized()
+    private HubConnection _hub;
+
+    protected async override void OnInitialized()
     {
+
+        try
+        {
+            _hub = new HubConnectionBuilder()
+            .WithUrl(_nav.BaseUri.TrimEnd('/') + ChatHub.HubPath)
+            .Build();
+            _hub.On("Update", Update);
+            await _hub.StartAsync();
+            StateHasChanged();
+
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
 
     }
 
+    private void Update()
+    {
+        StateHasChanged();
+    }
+
+    string name = String.Empty;
+
+    private void KeySendHandler(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter" || e.Code == "NumpadEnter")
+        {
+            Create();
+
+        }
+
+    }
+    private async void Create()
+    {
+        RoomModel NewRoom = new RoomModel();
+        NewRoom.Id = Guid.NewGuid();
+        NewRoom.CreatedBy = current.User;
+        NewRoom.Name = name;
+        rooms.ChatRooms.Add(NewRoom.Id, NewRoom);
+        name = String.Empty;
+        await _hub.InvokeAsync("Update");
+       // _nav.NavigateTo("/", forceLoad: true);
+
+    }
 }
