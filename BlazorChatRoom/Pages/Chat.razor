@@ -101,10 +101,15 @@
         }
         else
         {
-             _nav.NavigateTo("/");
+            _nav.NavigateTo("/");
         }
     }
 
+    private async void Leave()
+    {
+          await _hub.InvokeAsync("RemoveToGroup", room.Id);
+         _nav.NavigateTo("/");
+    }
 }
 
 @if (isActive)
@@ -113,7 +118,15 @@
     <div class="card border-primary my-3 mainChat">
         <div class="card-header text-center">
 
-            <h3>Welcome to the Blazor Chat @user.Username!</h3>
+          
+            <div class="row text-center">
+                <div class ="col-11">
+                      <h3>Welcome to the Blazor Chat @user.Username!</h3>
+                </div>
+                <div class="col-1 justify-content-end ml-4">
+                    <button class="btn btn-danger" @onclick="Leave">Leave</button>
+                </div>
+            </div>
 
         </div>
         <div class="card-body chatText">
@@ -123,14 +136,32 @@
                     <div class="container-fluid">
                         @foreach (MessageModel item in room.Messages)
                         {
-                            <div class="row mb-2">
-                                <div class="col bg-info rounded-pill p-1 ps-2">
-                                    <span class="text-dark">@item.Sender says: </span>
-                                    <span class="text-light">@item.MessageBody</span>
-                                    <br />
-                                    <span class="text-light small">@item.TimeStamp.ToString("dd/MM/yyyy hh:mm:ss")</span>
+
+                            @if (user.Username == item.Sender)
+                            {
+                                <div class="row mb-2 justify-content-end">
+                                    <div class="col-10 bg-info rounded-pill p-1 ps-2">
+                                        <span class="text-dark">@item.Sender says: </span>
+                                        <span class="text-light">@item.MessageBody</span>
+                                        <br />
+                                        <span class="text-light small">@item.TimeStamp.ToString("dd/MM/yyyy hh:mm:ss")</span>
+                                    </div>
                                 </div>
-                            </div>
+
+                            }
+                            else
+                            {                    
+                                 <div class="row mb-2 justify-content-start">
+                                    <div class="col-10 bg-primary rounded-pill p-1 ps-2">
+                                        <span class="text-dark">@item.Sender says: </span>
+                                        <span class="text-light">@item.MessageBody</span>
+                                        <br />
+                                        <span class="text-light small">@item.TimeStamp.ToString("dd/MM/yyyy hh:mm:ss")</span>
+                                    </div>
+                                </div>
+                            }
+
+
                         }
                     </div>
                 </div>
